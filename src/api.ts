@@ -48,6 +48,40 @@ export type RequestApiResult<T> =
   | { success: true; value: T }
   | { success: false; err: Error };
 
+
+export type RequestApiOptions = {
+  url: string;
+  headers: Headers;
+};
+
+export async function requestApiDetail(
+  url: string,
+  auth: TwitterAuth,
+  genXClientTransactionId: boolean,
+  method: 'GET' | 'POST' = 'GET',
+  platform: PlatformExtensions = new Platform(),
+  headers: Headers = new Headers(),
+  bearerTokenOverride?: string,
+): Promise<RequestApiOptions> {
+  log(`Making ${method} request to ${url}`);
+
+  await auth.installTo(headers, url, bearerTokenOverride);
+  await platform.randomizeCiphers();
+
+  if (genXClientTransactionId) {
+    const transactionId = await generateTransactionId(
+      url,
+      auth.fetch.bind(auth),
+      method,
+    );
+    headers.set('x-client-transaction-id', transactionId);
+  }
+  return {
+    url: url,
+    headers: headers,
+  };
+}
+
 /**
  * Used internally to send HTTP requests to the Twitter API.
  * @internal

@@ -623,4 +623,12 @@ export class Scraper {
 
     return res.value;
   }
+
+  public getToken(): string {
+    return this.token;
+  }
+
+  public getAuth(): TwitterAuth {
+    return this.auth;
+  }
 }

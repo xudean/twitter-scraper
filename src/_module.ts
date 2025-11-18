@@ -1,5 +1,9 @@
-export type { FetchTransformOptions } from './api';
-export type { FetchParameters } from './api-types';
+export { requestApiDetail } from './api';
+export type {
+  RequestApiResult,
+  RequestApiOptions,
+  FetchTransformOptions,
+} from './api';export type { FetchParameters } from './api-types';
 export type {
   TwitterUserAuthCredentials,
   TwitterUserAuthFlowInitRequest,
