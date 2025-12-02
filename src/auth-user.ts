@@ -240,16 +240,8 @@ export class TwitterUserAuth extends TwitterGuestAuth {
   }
 
   async isLoggedIn(): Promise<boolean> {
-    const res = await requestApi<TwitterUserAuthVerifyCredentials>(
-      'https://api.x.com/1.1/account/verify_credentials.json',
-      this,
-    );
-    if (!res.success) {
-      return false;
-    }
-
-    const { value: verify } = res;
-    return verify && !verify.errors?.length;
+    const cookie = await this.getCookieString();
+    return cookie.includes('ct0=');
   }
 
   async login(
@@ -581,16 +573,13 @@ export class TwitterUserAuth extends TwitterGuestAuth {
     });
   }
 
-  private async handleSuccessSubtask(
-    _subtaskId: string,
-    _prev: TwitterUserAuthFlowResponse,
-    _credentials: TwitterUserAuthCredentials,
-    api: FlowSubtaskHandlerApi,
-  ): Promise<FlowTokenResult> {
-    return await this.executeFlowTask({
-      flow_token: api.getFlowToken(),
-      subtask_inputs: [],
-    });
+  private async handleSuccessSubtask(): Promise<FlowTokenResult> {
+    // Login completed successfully, nothing more to do
+    log('Successfully logged in with user credentials.');
+    return {
+      status: 'success',
+      response: {},
+    };
   }
 
   private async executeFlowTask(

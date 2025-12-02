@@ -6,7 +6,7 @@ import {
 } from '@the-convocation/twitter-scraper/cycletls';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
 
 /**
  * Example: Using CycleTLS to bypass Cloudflare bot detection
@@ -37,14 +37,15 @@ const main = async () => {
   try {
     console.log('Logging in with CycleTLS-powered requests...');
     await scraper.login(username, password, email);
-
+    console.log('Logged in!');
+    await scraper.getProfileRequestDetail(username);
     console.log('Login successful! Fetching a tweet...');
-    const tweet = await scraper.getTweet('1585338303800578049');
-
-    console.log('Tweet details:');
-    console.log(`- Text: ${tweet?.text}`);
-    console.log(`- Likes: ${tweet?.likes}`);
-    console.log(`- Retweets: ${tweet?.retweets}`);
+    // const tweet = await scraper.getTweet('1585338303800578049');
+    //
+    // console.log('Tweet details:');
+    // console.log(`- Text: ${tweet?.text}`);
+    // console.log(`- Likes: ${tweet?.likes}`);
+    // console.log(`- Retweets: ${tweet?.retweets}`);
   } catch (error) {
     console.error('Error:', error);
   } finally {

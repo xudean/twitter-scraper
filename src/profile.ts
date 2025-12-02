@@ -1,4 +1,9 @@
-import { requestApi, RequestApiResult } from './api';
+import {
+  requestApi,
+  RequestApiResult,
+  bearerToken2,
+  requestApiDetail,
+} from './api';
 import { TwitterAuth } from './auth';
 import { TwitterApiErrorRaw } from './errors';
 import { apiRequestFactory } from './api-data';
@@ -84,6 +89,10 @@ export interface LegacyUserRaw {
   // TODO: Get the proper type of this.
   withheld_in_countries?: any[];
   followed_by?: boolean;
+}
+
+export interface ProfileRequestDetail {
+
 }
 
 /**
@@ -181,6 +190,25 @@ export function parseProfile(
 
   return profile;
 }
+export async function getProfileRequestDetail(
+  username: string,
+  auth: TwitterAuth,
+): Promise<any> {
+  const request = apiRequestFactory.createUserByScreenNameRequest();
+  request.variables.screen_name = username;
+  console.log(request.toRequestUrl());
+  // @ts-ignore
+  const res = await requestApiDetail<any>(
+    request.toRequestUrl(),
+    auth,
+    'GET',
+    undefined,
+    undefined,
+    bearerToken2,
+  );
+  // console.log('res', res);
+  return res;
+}
 
 export async function getProfile(
   username: string,
@@ -189,7 +217,16 @@ export async function getProfile(
   const request = apiRequestFactory.createUserByScreenNameRequest();
   request.variables.screen_name = username;
 
-  const res = await requestApi<UserRaw>(request.toRequestUrl(), auth);
+  // Use bearerToken2 for UserByScreenName endpoint
+  const res = await requestApi<UserRaw>(
+    request.toRequestUrl(),
+    auth,
+    'GET',
+    undefined,
+    undefined,
+    bearerToken2,
+  );
+
   if (!res.success) {
     return res;
   }

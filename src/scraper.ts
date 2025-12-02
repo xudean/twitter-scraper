@@ -2,7 +2,12 @@ import { Cookie } from 'tough-cookie';
 import { bearerToken, FetchTransformOptions, RequestApiResult } from './api';
 import { TwitterAuth, TwitterAuthOptions, TwitterGuestAuth } from './auth';
 import { FlowSubtaskHandler, TwitterUserAuth } from './auth-user';
-import { getProfile, getUserIdByScreenName, Profile } from './profile';
+import {
+  getProfile,
+  getProfileRequestDetail,
+  getUserIdByScreenName,
+  Profile,
+} from './profile';
 import {
   fetchSearchProfiles,
   fetchSearchTweets,
@@ -139,6 +144,12 @@ export class Scraper {
   public async getProfile(username: string): Promise<Profile> {
     const res = await getProfile(username, this.auth);
     return this.handleResponse(res);
+  }
+
+  public async getProfileRequestDetail(username: string): Promise<any> {
+    const res = await getProfileRequestDetail(username, this.auth);
+    console.log('finish');
+    return res;
   }
 
   /**

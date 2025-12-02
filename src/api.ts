@@ -48,27 +48,59 @@ export type RequestApiResult<T> =
   | { success: true; value: T }
   | { success: false; err: Error };
 
-
 export type RequestApiOptions = {
   url: string;
   headers: Headers;
 };
+//
+// export async function requestApiDetail(
+//   url: string,
+//   auth: TwitterAuth,
+//   genXClientTransactionId: boolean,
+//   method: 'GET' | 'POST' = 'GET',
+//   platform: PlatformExtensions = new Platform(),
+//   headers: Headers = new Headers(),
+//   bearerTokenOverride?: string,
+// ): Promise<RequestApiOptions> {
+//   log(`Making ${method} request to ${url}`);
+//
+//   await auth.installTo(headers, url, bearerTokenOverride);
+//   await platform.randomizeCiphers();
+//
+//   if (genXClientTransactionId) {
+//     const transactionId = await generateTransactionId(
+//       url,
+//       auth.fetch.bind(auth),
+//       method,
+//     );
+//     headers.set('x-client-transaction-id', transactionId);
+//   }
+//   return {
+//     url: url,
+//     headers: headers,
+//   };
+// }
 
-export async function requestApiDetail(
+export async function requestApiDetail<T>(
   url: string,
   auth: TwitterAuth,
-  genXClientTransactionId: boolean,
   method: 'GET' | 'POST' = 'GET',
   platform: PlatformExtensions = new Platform(),
   headers: Headers = new Headers(),
   bearerTokenOverride?: string,
-): Promise<RequestApiOptions> {
+): Promise<any> {
   log(`Making ${method} request to ${url}`);
+  console.log(`Making ${method} request to ${url}`);
 
   await auth.installTo(headers, url, bearerTokenOverride);
+  console.log('install success');
   await platform.randomizeCiphers();
+  console.log('randomizeCiphers success');
 
-  if (genXClientTransactionId) {
+  if (
+    auth instanceof TwitterGuestAuth &&
+    auth.options?.experimental?.xClientTransactionId
+  ) {
     const transactionId = await generateTransactionId(
       url,
       auth.fetch.bind(auth),
@@ -76,6 +108,8 @@ export async function requestApiDetail(
     );
     headers.set('x-client-transaction-id', transactionId);
   }
+  console.log('requestApiDetail success')
+  // @ts-ignore
   return {
     url: url,
     headers: headers,
@@ -119,6 +153,7 @@ export async function requestApi<T>(
 
   let res: Response;
   do {
+    console.log('haders:', headers);
     const fetchParameters: FetchParameters = [
       url,
       {
